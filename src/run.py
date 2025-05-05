@@ -30,12 +30,12 @@ def main():
 
     ''' Deleting Objects where meta data have prime = 1 '''
     objects_to_delete = [el['Key']
-                         for el in data_bucket_obects if el['Metadata']['prime'] != '1']
+                         for el in data_bucket_obects if el['Metadata']['prime'] == '1']
 
     if delete_objects_in_batches(s3_object_service=s3_object_service, objects_to_delete=objects_to_delete):
         print("Objects deleted successfully")
 
-    data_bucket_obects = list_all_objects(s3_object_service)
+    data_bucket_obects = list_all_objects(s3_object_service, False)
     print(f'Objects left = {len(data_bucket_obects)}')
 
 

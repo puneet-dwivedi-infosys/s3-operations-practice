@@ -59,14 +59,19 @@ def delete_objects_in_batches(s3_object_service, objects_to_delete) :
         print(f'Error deleting the object {e}')
         return False
 
-def list_all_objects(s3_object_service):
+def list_all_objects(s3_object_service, meta_data = True):
     data_bucket_objects = s3_object_service.list_objects()
 
     parsed_data_bucket_objects = []
 
     for _object in data_bucket_objects:
         object_key = _object['Key']
-        object_head = s3_object_service.get_object_head(object_key)
-        parsed_data_bucket_objects.append(object_head)
+        if meta_data:
+            object_head = s3_object_service.get_object_head(object_key)
+            parsed_data_bucket_objects.append(object_head)
+        else :
+            parsed_data_bucket_objects.append({
+                'Key': object_key,
+            })
 
     return parsed_data_bucket_objects
