@@ -1,5 +1,5 @@
 
-from utils.constants import DEFAULT_REGION
+from src.utils.constants import DEFAULT_REGION
 
 
 class S3BucketService():

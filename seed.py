@@ -1,10 +1,10 @@
 
 ''' Local Modules import '''
-from services.s3_client_service import S3ClientService
-from services.s3_bucket_service import S3BucketService
-from services.s3_object_service import S3ObjectService
-from utils.utils import upload_demo_objects_to_s3
-from utils.constants import S3_BUCKET_NAME, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_DEFAULT_REGION
+from src.services.s3_client_service import S3ClientService
+from src.services.s3_bucket_service import S3BucketService
+from src.services.s3_object_service import S3ObjectService
+from src.utils.utils import upload_demo_objects_to_s3
+from src.utils.constants import S3_BUCKET_NAME, AWS_ACCESS_KEY, AWS_SECRET_KEY, AWS_DEFAULT_REGION
 
 
 def seed():

@@ -15,8 +15,10 @@ class S3ObjectService():
                 Metadata=meta_data,
                 Tagging=tags
             )
+            return True
         except Exception as e:
             print(f"Error uploading the object, {e}")
+            return False
 
     def multipart_upload(self, object_key, body, part_size=10):
         print("Uploading in parts..........")
@@ -94,7 +96,6 @@ class S3ObjectService():
                 'Metadata': object_head['Metadata'],
                 'Bucket': self.bucket_name
             }
-            return object_head
         except Exception as e:
             print(f"Error getting head of the object")
             return {}
