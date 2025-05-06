@@ -24,8 +24,6 @@ jobs :
 
             - name : Running Tests
               run : |
-                python -m venv venv
-                venv/Scripts/activate
                 pip install -r requirements.txt
                 pytest tests
 
