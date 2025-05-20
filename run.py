@@ -22,23 +22,14 @@ def main():
     '''
     
     ''' Fetching all the objects '''
-    data_bucket_obects = list_all_objects(s3_object_service)
 
-    print(f'Total Objects = {len(data_bucket_obects)}')
-    # for el in data_bucket_obects :
-    #     print(el)
+    # deleting object by meta data
+    s3_object_service.delete_objects_by_meta_data({'prime' : '1'})
 
-    ''' Deleting Objects where meta data have prime = 1 '''
-    objects_to_delete = [el['Key']
-                         for el in data_bucket_obects if el['Metadata']['prime'] == '1']
+    # deleting object by key
+    s3_object_service.delete_objects_by_tags({'category':'odd'})
 
-    if delete_objects_in_batches(s3_object_service=s3_object_service, objects_to_delete=objects_to_delete):
-        print("Objects deleted successfully")
-
-    data_bucket_obects = list_all_objects(s3_object_service, False)
-    print(f'Objects left = {len(data_bucket_obects)}')
-
-
+    
 ''' Code execution starts from here '''
 if __name__ == "__main__":
     main()

@@ -100,6 +100,13 @@ class S3ObjectService():
             print(f"Error getting head of the object")
             return {}
 
+    def get_object_tags(self, object_key):
+        response = self.__s3_client.get_object_tagging(
+            Bucket=self.bucket_name,
+            Key=object_key
+        )
+        return response['TagSet']
+
     def delete_objects(self, object_keys):
         if len(object_keys) <= 0:
             return True
@@ -115,3 +122,78 @@ class S3ObjectService():
         except Exception as e:
             print(f'Error deleting the objects')
             return False
+
+    def list_objects_with_tags(self):
+        data_bucket_objects = self.list_objects()
+
+        parsed_data_bucket_tags = []
+
+        for _object in data_bucket_objects:
+            object_key = _object['Key']
+            object_tags = self.get_object_tags(object_key)
+            
+            parsed_data_bucket_tags.append({
+                'Key': object_key,
+                'Tags': object_tags
+            })
+
+        return parsed_data_bucket_tags
+
+    def list_objects_with_meta_data(self):
+        data_bucket_objects = self.list_objects()
+
+        parsed_data_bucket_objects = []
+
+        for _object in data_bucket_objects:
+            object_key = _object['Key']
+            object_head = self.get_object_head(object_key)            
+            parsed_data_bucket_objects.append(object_head)
+
+        return parsed_data_bucket_objects
+
+    def delete_objects_by_meta_data(self, meta_data):
+        object_list = self.list_objects_with_meta_data()
+        print("Object Before deleting -", len(object_list))
+
+        objects_to_delete = []
+        for _object in object_list:
+
+            _object_meta_data = _object['Metadata']
+            include_ = True
+
+            # for each meta data in condition if object have that if does not make include as false
+            for meta_data_key, meta_data_value in meta_data.items():
+                if _object_meta_data.get(meta_data_key, "") != meta_data_value:
+                    include_ = False
+
+            if include_:
+                objects_to_delete.append(_object['Key'])
+
+        print("Deleting object where meta_data =", meta_data)
+        self.delete_objects(objects_to_delete)
+
+        print("Object After deleting - ", len(object_list)-len(objects_to_delete))
+
+    def delete_objects_by_tags(self, tags):
+        object_list = self.list_objects_with_tags()
+        print("Objects before deleting -", len(object_list))
+
+        objects_to_delete = []
+
+        for _object in object_list:
+            object_tags = {tag['Key']: tag['Value'] for tag in _object['Tags']}
+            include_ = True
+
+            # Check if all provided tags match the object's tags
+            for tag_key, tag_value in tags.items():
+                if object_tags.get(tag_key, "") != tag_value:
+                    include_ = False
+                    break
+
+            if include_:
+                objects_to_delete.append(_object['Key'])
+
+        print("Deleting objects where tags =", tags)
+        self.delete_objects(objects_to_delete)
+
+        print("Objects after deleting -", len(object_list) - len(objects_to_delete))

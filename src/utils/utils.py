@@ -27,7 +27,7 @@ def generate_demo_objects(count):
             'prime': str(is_prime(i))
         }
         object_key = f'object-{i}'
-        tags = f'number={i}'
+        tags = f'number={i}&category={'odd' if i % 2 == 1 else 'even'}'
 
         data.append({
             'body' : body,

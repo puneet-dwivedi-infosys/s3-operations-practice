@@ -71,3 +71,33 @@ class TestS3ObjectService:
 
         objects = s3_service.list_objects()
         assert objects == []
+
+    def test_delete_objects_by_meta_data(self, s3_service):
+        # Upload objects with metadata
+        s3_service.upload_object("meta1.txt", b"data1", meta_data={"env": "dev"})
+        s3_service.upload_object("meta2.txt", b"data2", meta_data={"env": "prod"})
+        s3_service.upload_object("meta3.txt", b"data3", meta_data={"env": "dev", "team": "analytics"})
+
+        # Delete objects with metadata: env=dev
+        s3_service.delete_objects_by_meta_data({"env": "dev"})
+
+        # Check remaining objects
+        remaining_objects = [obj['Key'] for obj in s3_service.list_objects()]
+        assert "meta2.txt" in remaining_objects
+        assert "meta1.txt" not in remaining_objects
+        assert "meta3.txt" not in remaining_objects
+
+    def test_delete_objects_by_tags(self, s3_service):
+        # Upload objects with tags
+        s3_service.upload_object("tag1.txt", b"data1", tags="env=dev")
+        s3_service.upload_object("tag2.txt", b"data2", tags="env=prod")
+        s3_service.upload_object("tag3.txt", b"data3", tags="env=dev&team=analytics")
+
+        # Delete objects with tag: env=dev
+        s3_service.delete_objects_by_tags({"env": "dev"})
+
+        # Check remaining objects
+        remaining_objects = [obj['Key'] for obj in s3_service.list_objects()]
+        assert "tag2.txt" in remaining_objects
+        assert "tag1.txt" not in remaining_objects
+        assert "tag3.txt" not in remaining_objects
